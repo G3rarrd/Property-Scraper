@@ -1,5 +1,6 @@
 import traceback
 from typing import Optional
+from .rent_config import RentField
 
 
 def first(items: list, default=None):
@@ -46,7 +47,7 @@ def extract_listing_badge(property_card):
         )
     return listing_badge
 
-def parse_property(property_card) -> dict | None:
+def parse_property(property_card) -> RentField | None:
     try:
         link = attribute(property_card, ".//a[@aria-label]/@href")
         full_link = (
@@ -106,20 +107,32 @@ def parse_property(property_card) -> dict | None:
 
         agent_name = extract_agent_name(property_card)
             
-
-        return {
-            "title": title,
-            "listing_type": listing_type,
-            "listing_badge": listing_badge,
-            "price": price,
-            "period": period,
-            "address": address,
-            "description": description,
-            "thumbnail": thumbnail,
-            "link": full_link,
-            "agent_name": agent_name,
-            "features": features,
-        }
+        return RentField(
+            title=title,
+            listing_type=listing_type,
+            listing_badge=listing_badge,
+            price=price,
+            period=period,
+            address=address,
+            description=description,
+            thumbnail=thumbnail,
+            full_link=full_link,
+            agent_name=agent_name,
+            features=features
+        )
+        # return {
+        #     "title": title,
+        #     "listing_type": listing_type,
+        #     "listing_badge": listing_badge,
+        #     "price": price,
+        #     "period": period,
+        #     "address": address,
+        #     "description": description,
+        #     "thumbnail": thumbnail,
+        #     "link": full_link,
+        #     "agent_name": agent_name,
+        #     "features": features,
+        # }
 
     except Exception as e:
         print(f"Error parsing property: {e}")

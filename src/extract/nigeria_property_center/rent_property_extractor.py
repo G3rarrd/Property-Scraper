@@ -2,7 +2,7 @@ from playwright.async_api import Page, Response
 from lxml import html
 from typing import Optional
 
-from logger import get_logger, Logger
+from src.logger import get_logger, Logger
 LOGGER : Logger = get_logger(__name__)
 
 async def extract_property_cards(page : Page, url : str) -> list:

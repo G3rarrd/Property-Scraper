@@ -1,8 +1,8 @@
 from asyncio import Queue
-from infrastructre.browser_manager import AsyncBrowserManager
+from src.infrastructre.browser_manager import AsyncBrowserManager
 from .rent_parser import parse_property
 from .rent_property_extractor import extract_property_cards
-from logger import get_logger, Logger
+from src.logger import get_logger, Logger
 
 LOGGER : Logger = get_logger(__name__)
 

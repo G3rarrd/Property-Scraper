@@ -2,7 +2,7 @@ from asyncio import Queue
 from pathlib import Path
 import json
 
-from logger import get_logger, Logger
+from src.logger import get_logger, Logger
 LOGGER : Logger = get_logger(__name__)
 
 async def npc_writer(result_queue : Queue, output_file_path : Path) :

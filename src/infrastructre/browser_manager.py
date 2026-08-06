@@ -2,8 +2,8 @@ from playwright.async_api import async_playwright, Browser, BrowserContext, Page
 from pathlib import Path
 from typing import Optional, Dict, List, Tuple
 import random
-from infrastructre.browser_config import BROWSER_CONFIG
-from logger import get_logger, Logger
+from src.infrastructre.browser_config import BROWSER_CONFIG
+from src.logger import get_logger, Logger
 
 LOGGER : Logger = get_logger(__name__)
 

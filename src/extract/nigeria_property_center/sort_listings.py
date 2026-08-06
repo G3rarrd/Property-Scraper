@@ -1,9 +1,9 @@
 import asyncio
 from playwright.async_api import Page, BrowserContext
-from infrastructre.browser_manager import AsyncBrowserManager
+from src.infrastructre.browser_manager import AsyncBrowserManager
 from typing import Any, Optional
 
-from logger import get_logger, Logger
+from src.logger import get_logger, Logger
 
 LOGGER : Logger = get_logger(__name__)
 
