@@ -42,6 +42,7 @@ async def worker(
                 )
                 input_queue.task_done()
                 
+                # kills the writer task
                 if input_queue.empty():
                     await result_queue.put(None)
                 

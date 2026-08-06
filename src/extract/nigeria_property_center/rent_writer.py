@@ -23,9 +23,9 @@ async def npc_writer(result_queue : Queue, output_file_path : Path) :
 
             if property is None:
                 LOGGER.info(
-                    "writer_stopping",
+                    f"writer_closed | Total Written: {write_count}",
                     extra={
-                        "event": "writer_stopping",
+                        "event": "writer_closed",
                         "write_count": write_count,
                     },
                 )
@@ -42,7 +42,7 @@ async def npc_writer(result_queue : Queue, output_file_path : Path) :
             except Exception as e:
 
                 LOGGER.exception(
-                    "write_failed",
+                    f"write_failed | Property: {property} | Error: {e}",
                     extra={
                         "event": "write_failed",
                         "error_type": type(e).__name__,
@@ -52,11 +52,3 @@ async def npc_writer(result_queue : Queue, output_file_path : Path) :
 
             finally:
                 result_queue.task_done()
-
-    LOGGER.info(
-        "writer_closed",
-        extra={
-            "event": "writer_closed",
-            "total_written": write_count,
-        },
-    )

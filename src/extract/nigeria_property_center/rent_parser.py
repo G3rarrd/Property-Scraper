@@ -22,7 +22,29 @@ def attribute(node, query: str) -> Optional[str]:
 def children(node, query: str):
     return node.xpath(query)
 
+def extract_agent_name(property_card):
+    #
+    agent_name = property_card.xpath(
+        'normalize-space(.//p[contains(@class,"text-foreground-strong")])'
+    )
 
+    if not agent_name:
+        agent_name = property_card.xpath(
+            'normalize-space(.//use[@href="#i-building-2"]/ancestor::svg/following-sibling::text()[1])'
+        )
+
+    return agent_name
+
+def extract_listing_badge(property_card):
+    listing_badge = property_card.xpath(
+    'normalize-space(.//span[contains(@class,"bg-accent-bg")])'
+    )
+
+    if not listing_badge:
+        listing_badge = property_card.xpath(
+            'normalize-space(.//span[.//use[@href="#i-gem"]])'
+        )
+    return listing_badge
 
 def parse_property(property_card) -> dict | None:
     try:
@@ -41,6 +63,8 @@ def parse_property(property_card) -> dict | None:
             property_card,
             ".//p[contains(@class,'text-primary')]/text()"
         )
+        
+        listing_badge = extract_listing_badge(property_card)
 
         thumbnail = attribute(
             property_card,
@@ -78,24 +102,15 @@ def parse_property(property_card) -> dict | None:
             " ".join(node.text_content().split())
             for node in features_node
         ]
-        
-        phone = attribute(
-            property_card,
-            './/a[starts-with(@href,"tel:")]/@href'
-        )
 
-        phone = phone.removeprefix("tel:") if phone else None
 
-        agent_name = property_card.xpath(
-                './/div[contains(@class, "border-t") and contains(@class, "pt-3")]'
-            )
-        
-        agent_name = agent_name[0].text_content().strip() if agent_name else None
-        
+        agent_name = extract_agent_name(property_card)
+            
 
         return {
             "title": title,
             "listing_type": listing_type,
+            "listing_badge": listing_badge,
             "price": price,
             "period": period,
             "address": address,
