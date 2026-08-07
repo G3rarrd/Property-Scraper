@@ -1,27 +1,21 @@
 import traceback
 from typing import Optional
-from .rent_config import RentField
+from .rent_model import RentField
 
 
 def first(items: list, default=None):
     return items[0] if items else default
 
-
 def text(node, query: str) -> Optional[str]:
     result = node.xpath(query)
     return result[0].strip() if result else None
 
-
-def texts(node, query: str) -> list[str]:
-    return [t.strip() for t in node.xpath(query) if t and t.strip()]
-
-
 def attribute(node, query: str) -> Optional[str]:
     return first(node.xpath(query))
 
-
-def children(node, query: str):
-    return node.xpath(query)
+def extract_property_cards(tree) -> list:
+    property_cards = tree.xpath("//article[contains(@class,'group')]")
+    return property_cards
 
 def extract_agent_name(property_card):
     #
@@ -50,7 +44,7 @@ def extract_listing_badge(property_card):
 def parse_property(property_card) -> RentField | None:
     try:
         link = attribute(property_card, ".//a[@aria-label]/@href")
-        full_link = (
+        link = (
             f"https://nigeriapropertycentre.com{link}"
             if link else None
         )
@@ -116,7 +110,7 @@ def parse_property(property_card) -> RentField | None:
             address=address,
             description=description,
             thumbnail=thumbnail,
-            full_link=full_link,
+            link=link,
             agent_name=agent_name,
             features=features
         )

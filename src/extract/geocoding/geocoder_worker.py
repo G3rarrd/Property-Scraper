@@ -2,7 +2,7 @@ from asyncio import Queue
 # from geocoding.google_map_geocoder import GoogleMapsGeocoder
 from typing import List
 
-from infrastructre.browser_manager import AsyncBrowserManager
+from scraper_infrastructre.browser_manager import AsyncBrowserManager
 from .google_map_geocoder import GoogleMapsGeocoder
 
 

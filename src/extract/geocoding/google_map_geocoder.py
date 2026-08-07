@@ -2,7 +2,7 @@ from urllib.parse import quote
 from typing import Optional
 import re
 
-from infrastructre.browser_manager import BrowserManager
+from scraper_infrastructre.browser_manager import BrowserManager
 from playwright.async_api import Page
 
 class GoogleMapsGeocoder:

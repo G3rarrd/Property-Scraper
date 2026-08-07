@@ -1,54 +1,61 @@
 from asyncio import Queue
 from pathlib import Path
 import json
+from dataclasses import asdict
+from lxml import html
+from typing import Optional
+from tqdm import tqdm
 
+from src.config.npc_paths import EXTRACTED_RENTAL_FILE, RAW_RENTAL, PROCESSED_RENTAL
+from src.extract.json_writer import write_to_json
+from src.extract.nigeria_property_center.rent_parser import extract_property_cards, parse_property
+from src.storage.html_loader import HTMLLoader
+from .rent_model import RentField
 from src.logger import get_logger, Logger
 LOGGER : Logger = get_logger(__name__)
 
-async def npc_writer(result_queue : Queue, output_file_path : Path) :
-    LOGGER.info(
-        "writer_started",
-        extra={
-            "event": "writer_started",
-            "output_path": str(output_file_path),
-        },
-    )
 
-    write_count = 0
 
-    with open(output_file_path, "a", encoding="utf-8") as file_append:
-        while True:
+def rent_writer(loader : HTMLLoader, data_dir : Path) :
+    html_data = list(data_dir.glob("*.html.gz"))
+    
+    extract_html_bar = tqdm(total=len(html_data))
+    
+    properties : list[dict] = []
+    for file in html_data:
+        html_text : Optional[str] = loader.load(file)
+
+        if not html_text:
+            continue
         
-            property = await result_queue.get()
+        tree = html.fromstring(html_text)
+        
+        property_cards = extract_property_cards(tree)
+        
+        for prop_card in property_cards:
+            prop_info : Optional[RentField] = parse_property(prop_card)
+            
+            if not prop_info:
+                continue
+            
+            properties.append(asdict(prop_info))
+            
+        extract_html_bar.update(1)
+        extract_html_bar.set_postfix(properties_found=f"{len(properties)}")
+    
+    
+    extract_html_bar.close()
+    
+    return properties
 
-            if property is None:
-                LOGGER.info(
-                    f"writer_closed | Total Written: {write_count}",
-                    extra={
-                        "event": "writer_closed",
-                        "write_count": write_count,
-                    },
-                )
+    
+    
+if __name__ == "__main__":
+    extracted_file_path = EXTRACTED_RENTAL_FILE
 
-                result_queue.task_done()
-                break
-
-            try:
-                file_append.write(json.dumps(property) + "\n")
-                file_append.flush()
-
-                write_count += 1
-
-            except Exception as e:
-
-                LOGGER.exception(
-                    f"write_failed | Property: {property} | Error: {e}",
-                    extra={
-                        "event": "write_failed",
-                        "error_type": type(e).__name__,
-                        "error_message": str(e),
-                    },
-                )
-
-            finally:
-                result_queue.task_done()
+    loader = HTMLLoader()
+    
+    properties = rent_writer(loader, RAW_RENTAL)
+    
+    write_to_json(extracted_file_path, properties)
+    
