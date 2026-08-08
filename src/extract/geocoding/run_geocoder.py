@@ -7,7 +7,7 @@ from src.extract.geocoding.address_writer import write_address
 from src.extract.geocoding.google_maps_warmup import GoogleMapsWarmup
 from asyncio import Queue
 import asyncio
-from scraper_infrastructre.browser_manager import AsyncBrowserManager
+from src.fetchers.playwright.browser_manager import AsyncBrowserManager
 
 async def run_geocoder(
         cache_path : Path, 

@@ -1,7 +1,7 @@
 from logging import Logger
 from pathlib import Path
 import json
-from src.config.npc_paths import EXTRACTED_RENTAL_FILE, DEDUPLICATED_RENTAL_LISTINGS
+from src.config.npc_paths import DEDUPLICATED_SALE_LISTINGS, EXTRACTED_RENTAL_FILE, DEDUPLICATED_RENTAL_LISTINGS, EXTRACTED_SALE_FILE
 from src.logger import get_logger
 
 LOGGER : Logger = get_logger(__name__)
@@ -33,16 +33,16 @@ def write_unique_properties(unique_properties : list[dict], output_path : Path):
 if __name__ == "__main__":
     
     LOGGER.info(
-        f"Starting deduplication process... | Input Path: {EXTRACTED_RENTAL_FILE}",
+        f"Starting deduplication process... | Input Path: {EXTRACTED_SALE_FILE}",
         extra={
             "event": "deduplication_started",
-            "input_path": str(EXTRACTED_RENTAL_FILE),
+            "input_path": str(EXTRACTED_SALE_FILE),
         }
     )
     
-    unique_props : list[dict] = deduplicate_properties(EXTRACTED_RENTAL_FILE)
+    unique_props : list[dict] = deduplicate_properties(EXTRACTED_SALE_FILE)
     
-    write_unique_properties(unique_props, DEDUPLICATED_RENTAL_LISTINGS)
+    write_unique_properties(unique_props, DEDUPLICATED_SALE_LISTINGS)
     
     LOGGER.info(
         f"Deduplication process completed. | Unique properties: {len(unique_props)} | Output Path: {DEDUPLICATED_RENTAL_LISTINGS}",
@@ -50,6 +50,6 @@ if __name__ == "__main__":
         extra={
             "event": "deduplication_completed",
             "unique_count": len(unique_props),
-            "output_path": str(DEDUPLICATED_RENTAL_LISTINGS),
+            "output_path": str(DEDUPLICATED_SALE_LISTINGS),
         }
     )

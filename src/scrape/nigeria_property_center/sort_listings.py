@@ -1,6 +1,6 @@
 import asyncio
 from playwright.async_api import Page, BrowserContext
-from src.scraper_infrastructre.browser_manager import AsyncBrowserManager
+from src.fetchers.playwright.browser_manager import AsyncBrowserManager
 from typing import Any, Optional
 
 from src.logger import get_logger, Logger

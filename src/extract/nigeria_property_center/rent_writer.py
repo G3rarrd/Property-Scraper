@@ -6,7 +6,7 @@ from lxml import html
 from typing import Optional
 from tqdm import tqdm
 
-from src.config.npc_paths import EXTRACTED_RENTAL_FILE, RAW_RENTAL, PROCESSED_RENTAL
+from src.config.npc_paths import EXTRACTED_RENTAL_FILE, EXTRACTED_SALE_FILE, RAW_RENTAL, PROCESSED_RENTAL, RAW_SALE
 from src.extract.json_writer import write_to_json
 from src.extract.nigeria_property_center.rent_parser import extract_property_cards, parse_property
 from src.storage.html_loader import HTMLLoader
@@ -51,11 +51,12 @@ def rent_writer(loader : HTMLLoader, data_dir : Path) :
     
     
 if __name__ == "__main__":
-    extracted_file_path = EXTRACTED_RENTAL_FILE
+    extracted_file_path = EXTRACTED_SALE_FILE
+    # extracted_file_path.mkdir(parents=True, exist_ok=True)
 
     loader = HTMLLoader()
     
-    properties = rent_writer(loader, RAW_RENTAL)
+    properties = rent_writer(loader, RAW_SALE)
     
     write_to_json(extracted_file_path, properties)
     

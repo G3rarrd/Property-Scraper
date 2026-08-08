@@ -1,11 +1,13 @@
 from logging import Logger
 from typing import Final
-from src.scraper_infrastructre.browser_manager import AsyncBrowserManager
+# from src.fetchers.base import Fetcher
+from src.fetchers.curl.curl import CurlFetcher
+# from src.fetchers.playwright.playwright import PlaywrightFetcher
+# from src.fetchers.playwright.playwright_config import PlaywrightConfig
 from src.logger import get_logger
-from .url_producer import producer
 from ...extract.nigeria_property_center.rent_writer import rent_writer
-from .rent_worker import worker
-from .sort_listings import NPCSortListings
+from .npc_worker import worker
+
 from asyncio import Queue
 import asyncio
 from pathlib import Path
@@ -13,20 +15,14 @@ from pathlib import Path
 URL : Final[str] = "https://nigeriapropertycentre.com/for-rent"
 LOGGER : Logger = get_logger(__name__)
 
-
-
-async def run_scraper(data_dir : Path, start_page : int, end_page : int, num_workers : int = 3):
-    npc_scraper_browser : AsyncBrowserManager = AsyncBrowserManager("npc_rent_session.json", False)
-        
-    await npc_scraper_browser.start()
-    
+async def run_scraper(data_dir : Path, url_list : list[str], num_workers : int = 3):
     input_queue : Queue = Queue()
-
+    
     workers = [
             asyncio.create_task(
                 worker(
                     f"worker={i}",
-                    npc_scraper_browser,
+                    CurlFetcher(),
                     input_queue,
                     data_dir
                 )
@@ -34,7 +30,8 @@ async def run_scraper(data_dir : Path, start_page : int, end_page : int, num_wor
             for i in range(num_workers)
         ]
     
-    await producer(URL, input_queue, start_page, end_page)
+    for url in url_list:
+        await input_queue.put(url)
     
     # poison workers
     for _ in range(num_workers):
@@ -43,5 +40,3 @@ async def run_scraper(data_dir : Path, start_page : int, end_page : int, num_wor
     await input_queue.join()
 
     await asyncio.gather(*workers)
-
-    await npc_scraper_browser.close()
