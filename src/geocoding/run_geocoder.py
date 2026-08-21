@@ -39,7 +39,7 @@ async def run():
     # Geocoder
     geocoder = GoogleMapsGeocoder(curl)
     
-    worker_count = 3
+    worker_count = 1
     input_queue = asyncio.Queue()
     
     for address in addresses:
