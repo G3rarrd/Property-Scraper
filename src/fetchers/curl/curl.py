@@ -1,8 +1,8 @@
 from src.fetchers.base import FetchResult, Fetcher
 from random import choice
-from curl_cffi.requests import AsyncSession
+from curl_cffi.requests import AsyncSession, Response
 import asyncio
-
+from urllib.parse import quote
 BROWSERS = ["chrome", "firefox", "safari"]
 
 class CurlFetcher(Fetcher):
@@ -26,14 +26,16 @@ class CurlFetcher(Fetcher):
             await self.session.close()
             self.session = None
             
-    async def get(self, url, **kwargs) -> FetchResult:
+    async def get_response(self, url, **kwargs) -> Response:
         if not self.session:
             raise("Session has Not Started!")
         
-        response = await self.session.get(url, **kwargs)
-        
-        
+        response : Response = await self.session.get(url, **kwargs)
         response.raise_for_status()
+        return response
+            
+    async def get(self, url, **kwargs) -> FetchResult:
+        response = self.get_response(url, **kwargs)
         
         return FetchResult(
             url=str(response.url),
@@ -42,13 +44,28 @@ class CurlFetcher(Fetcher):
         )
 
 async def demo():
-    curl = CurlFetcher()
-    await curl.start()
-    print(curl.impersonate)
-    response = await curl.get("https://nigeriapropertycentre.com/for-rent/?q=for-rent&sort=2")
-    print(response.content)
+    # cookies = await get_google_maps_cookies()
+    # print(cookies)
     
+    # curl = CurlFetcher()
+    # await curl.start()
+    
+    # url = ("https://www.google.com/maps/search/"
+    #              f"?api=1&query={quote("Periwinkle Lifestyle Estate, Ikate, Lekki, Lagos")}")
+    
+    # for cookie in cookies:
+    #     curl.session.cookies.set(
+    #         cookie["name"],
+    #         cookie["value"],
+    #         domain=cookie["domain"],
+    #         path=cookie["path"],
+    #     )
         
+    # response = await curl.get_response(url)
+    # print("Final URL:", response.url)
+    # print("Status:", response.status_code)
+    # await curl.close()
+    pass    
             
 if __name__ == "__main__":
     asyncio.run(demo())

@@ -1,11 +1,11 @@
 from src.fetchers.base import FetchResult, Fetcher
 from random import choice
-from playwright.async_api import async_playwright, Browser, BrowserContext
+from playwright.async_api import async_playwright, Browser, BrowserContext, Page, Cookie
 
 from src.fetchers.playwright.playwright_config import PlaywrightConfig
 
-
 import asyncio
+
 class PlaywrightFetcher(Fetcher):
     def __init__(self, config : PlaywrightConfig):
         self.config = config
@@ -29,22 +29,26 @@ class PlaywrightFetcher(Fetcher):
         
         self.context = await self.browser.new_context()
         
-        
     async def close(self):
         if self.browser:
             await self.browser.close()
             self.browser = None
+            self.context = None
+        
             
         if self.playwright:
             await self.playwright.stop()
             self.playwright = None
+            
+    async def create_page(self):
+        return await self.context.new_page()
             
             
     async def get(self, url : str, **kwargs) -> FetchResult:
         if not self.context:
             raise("No Context Found. Start Playwright")
         
-        page = await self.context.new_page()
+        page : Page = await self.context.new_page()
         
         response = await page.goto(
             url,
@@ -64,13 +68,21 @@ class PlaywrightFetcher(Fetcher):
             content=content
         )
         
+    async def save_session(self):
+        if self.context:
+            self.context.storage_state()
+        
 async def demo():
-    url = "https://httpbin.org"
-    playwright_config = PlaywrightConfig(headless=False)
-    playwright = PlaywrightFetcher(playwright_config)
-    await playwright.start()
-    await playwright.get(url),
-    await playwright.close()
+    pass
+
+    # res = await playwright.get(url)
+    # print(res.url)
+    # params = parse_qs(urlparse(res.url).query)
+
+    # maps_url = params["continue"][0]
+
+    # print(maps_url)
+    # await playwright.close()
     
 if "__main__" == __name__:
     asyncio.run(demo())

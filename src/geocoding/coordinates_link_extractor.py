@@ -1,21 +1,19 @@
 from urllib.parse import quote
 from typing import Optional
 import re
-
-from src.fetchers.playwright.browser_manager import BrowserManager
 from playwright.async_api import Page
 
-class GoogleMapsGeocoder:
+class CoordinatesLinkExtractor:
 
     @staticmethod
-    def __build_search_url(address: str) -> str:
+    def _build_search_url(address: str) -> str:
         return (
             "https://www.google.com/maps/search/"
             f"?api=1&query={quote(address)}"
         )
     
     @staticmethod
-    def __extract_coordinates(coordinates_url) -> tuple[Optional[float], Optional[float]]:
+    def _extract_coordinates(coordinates_url) -> tuple[Optional[float], Optional[float]]:
         match = (re.search(r'!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)', coordinates_url)
             or re.search(r'@(-?\d+\.\d+),(-?\d+\.\d+)', coordinates_url)
         )
@@ -28,15 +26,15 @@ class GoogleMapsGeocoder:
 
         return (latitude, longitude)
 
-    async def __async_fetch_url(self, page: Page, url : str):
-        response = await page.goto(url, wait_until="commit",  timeout=30000)
+    async def _get_url_with_coordinates(self, page: Page, url : str):
+        response = await page.goto(url, wait_until="commit",  timeout=300000)
         await page.wait_for_function(
             "() => window.location.href.includes('/@')",
-            timeout=30000
+            timeout=300000
         )
         return page.url
     
-    async def async_geocode(self, page: Page, address: str) -> tuple[Optional[float], Optional[float]]:
-        url = self.__build_search_url(address)
-        final_url = await self.__async_fetch_url(page=page, url=url)
-        return self.__extract_coordinates(final_url)
+    async def geocode(self, page: Page, address: str) -> tuple[Optional[float], Optional[float]]:
+        url = self._build_search_url(address)
+        final_url = await self._get_url_with_coordinates(page=page, url=url)
+        return self._extract_coordinates(final_url)

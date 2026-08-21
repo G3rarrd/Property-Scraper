@@ -1,0 +1,22 @@
+[
+  {
+    "name": "SOCS",
+    "value": "CAISNQgEEitib3FfaWRlbnRpdHlmcm9udGVuZHVpc2VydmVyXzIwMjYwODE5LjEwX3AwGgJlbiACGgYIgKqe1AY",
+    "domain": ".google.com",
+    "path": "/",
+    "expires": 1821400528.852229,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "NID",
+    "value": "534=QUYEqnABWtGCZksc1zKfJbRWSrUp4-dXcJ75L5ET1AOFeWxtPKYZEZMKmq-SzzEH0smFO1J28sRcdP7hRndBzSsGvs6LDFotlv1qxyf_1s5yvOTbl8DT8TkZ4F6KANmclgRkgc70WRN732Qf9h3TMYH4nBZVD3945BtnMJG3GC5bmTZGr56vKZDmA51nZiU-eX2bfn_1eX1RfaOKgyk",
+    "domain": ".google.com",
+    "path": "/",
+    "expires": 1803083728.852531,
+    "httpOnly": true,
+    "secure": false,
+    "sameSite": "Lax"
+  }
+]
